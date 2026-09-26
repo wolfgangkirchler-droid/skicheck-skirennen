@@ -14,7 +14,9 @@ else if (process.env.DEV_MEMORY === "1") store = require("./store-memory");
 else { console.error("DATABASE_URL fehlt. Bitte in Render unter Environment eintragen."); process.exit(1); }
 
 /* ---------- static page ---------- */
-const INDEX = fs.readFileSync(path.join(__dirname, "public", "index.html"));
+const INDEX_PATH = [path.join(__dirname, "public", "index.html"), path.join(__dirname, "index.html")].find(p => fs.existsSync(p));
+if (!INDEX_PATH) { console.error("index.html nicht gefunden (weder im Hauptordner noch in public/)."); process.exit(1); }
+const INDEX = fs.readFileSync(INDEX_PATH);
 const INDEX_GZ = zlib.gzipSync(INDEX, { level: 9 });
 
 /* ---------- passwords ---------- */
