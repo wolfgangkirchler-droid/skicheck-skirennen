@@ -18,6 +18,10 @@ const INDEX_PATH = [path.join(__dirname, "public", "index.html"), path.join(__di
 if (!INDEX_PATH) { console.error("index.html nicht gefunden (weder im Hauptordner noch in public/)."); process.exit(1); }
 const INDEX = fs.readFileSync(INDEX_PATH);
 const INDEX_GZ = zlib.gzipSync(INDEX, { level: 9 });
+const FLAGS_PATH = [path.join(__dirname, "public", "flags.json"), path.join(__dirname, "flags.json")].find(p => fs.existsSync(p));
+const FLAGS = FLAGS_PATH ? fs.readFileSync(FLAGS_PATH) : Buffer.from("{}");
+const FLAGS_GZ = zlib.gzipSync(FLAGS, { level: 9 });
+if (!FLAGS_PATH) console.warn("flags.json nicht gefunden: Flaggen werden als Ländercode angezeigt.");
 
 /* ---------- passwords ---------- */
 function hashPassword(pw) {
@@ -200,6 +204,37 @@ route("DELETE", "/api/locations/:id/assets/:key", async (req, res, u, p) => {
   await store.deleteAsset(id, p.key); return { ok: true };
 });
 
+/* anthems (shared by all locations) */
+const ANTHEM_RE = /^[A-Z]{3}$/;
+route("GET", "/api/anthems", async () => ({ anthems: await store.listAnthems() }));
+route("GET", "/api/anthems/:code", async (req, res, u, p) => {
+  if (!ANTHEM_RE.test(p.code)) throw new HttpError(404, "Unbekannt");
+  const a = await store.getAnthem(p.code); if (!a) throw new HttpError(404, "Keine Hymne hinterlegt");
+  const buf = Buffer.from(a.bytes); const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+  if (range) {
+    let start = range[1] === "" ? Math.max(0, buf.length - parseInt(range[2], 10)) : parseInt(range[1], 10);
+    let end = range[1] !== "" && range[2] !== "" ? parseInt(range[2], 10) : buf.length - 1;
+    if (isNaN(start) || start >= buf.length) { res.writeHead(416, { "Content-Range": `bytes */${buf.length}` }); res.end(); return undefined; }
+    end = Math.min(end, buf.length - 1);
+    const part = buf.subarray(start, end + 1);
+    res.writeHead(206, { "Content-Type": a.mime, "Content-Range": `bytes ${start}-${end}/${buf.length}`, "Accept-Ranges": "bytes", "Content-Length": part.length, "Cache-Control": "private, max-age=3600" });
+    res.end(part); return undefined;
+  }
+  res.writeHead(200, { "Content-Type": a.mime, "Accept-Ranges": "bytes", "Content-Length": buf.length, "Cache-Control": "private, max-age=3600" });
+  res.end(buf); return undefined;
+});
+route("PUT", "/api/anthems/:code", async (req, res, u, p) => {
+  if (!ANTHEM_RE.test(p.code)) throw bad("Ungültiger Ländercode");
+  const bytes = await readBody(req, 20 * 1024 * 1024); if (!bytes.length) throw bad("Leere Datei");
+  const mime = cleanStr(req.headers["x-asset-type"] || "audio/mpeg", 80); if (!/^audio\//.test(mime)) throw bad("Bitte eine Audiodatei (MP3, M4A, WAV, OGG) wählen.");
+  let name = ""; try { name = decodeURIComponent(String(req.headers["x-file-name"] || "")); } catch (e) {}
+  await store.setAnthem(p.code, cleanStr(name, 120), bytes, mime); return { ok: true };
+});
+route("DELETE", "/api/anthems/:code", async (req, res, u, p) => {
+  if (!ANTHEM_RE.test(p.code)) throw new HttpError(404, "Unbekannt");
+  await store.deleteAnthem(p.code); return { ok: true };
+});
+
 /* users (admin only) */
 function adminOnly(u) { if (!isAdmin(u)) throw new HttpError(403, "Keine Berechtigung"); }
 route("GET", "/api/users", async (req, res, u) => { adminOnly(u); return { users: await store.listUsers() }; });
@@ -241,6 +276,11 @@ const server = http.createServer(async (req, res) => {
       const gz = /\bgzip\b/.test(req.headers["accept-encoding"] || "");
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache", ...(gz ? { "Content-Encoding": "gzip" } : {}), "Content-Length": (gz ? INDEX_GZ : INDEX).length, "Vary": "Accept-Encoding" });
       return res.end(gz ? INDEX_GZ : INDEX);
+    }
+    if (req.method === "GET" && url.pathname === "/flags.json") {
+      const gz = /\bgzip\b/.test(req.headers["accept-encoding"] || "");
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400", ...(gz ? { "Content-Encoding": "gzip" } : {}), "Content-Length": (gz ? FLAGS_GZ : FLAGS).length, "Vary": "Accept-Encoding" });
+      return res.end(gz ? FLAGS_GZ : FLAGS);
     }
     for (const r of routes) {
       if (r.method !== req.method) continue;

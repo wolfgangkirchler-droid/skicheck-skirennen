@@ -1,6 +1,6 @@
 // In-memory storage with the same interface as store-pg.js.
 // Only for local testing (DEV_MEMORY=1). Data is lost on restart.
-const db = { users: [], sessions: new Map(), locations: [], races: [], assets: new Map(), seq: { u: 0, l: 0, r: 0 } };
+const db = { users: [], sessions: new Map(), locations: [], races: [], assets: new Map(), anthems: new Map(), seq: { u: 0, l: 0, r: 0 } };
 const now = () => new Date().toISOString();
 const clone = o => o == null ? o : JSON.parse(JSON.stringify(o));
 const pubUser = u => u && { id: u.id, username: u.username, name: u.name, role: u.role, location_id: u.location_id, active: u.active, created_at: u.created_at, last_login: u.last_login };
@@ -39,6 +39,10 @@ module.exports = {
   async getAsset(id, key) { return db.assets.get(id + ":" + key) || null; },
   async setAsset(id, key, bytes, mime) { db.assets.set(id + ":" + key, { bytes, mime }); },
   async deleteAsset(id, key) { db.assets.delete(id + ":" + key); },
+  async listAnthems() { return [...db.anthems.entries()].map(([code, a]) => ({ code, name: a.name, size: a.bytes.length, updated_at: a.updated_at })).sort((a, b) => a.code.localeCompare(b.code)); },
+  async getAnthem(code) { return db.anthems.get(code) || null; },
+  async setAnthem(code, name, bytes, mime) { db.anthems.set(code, { name, bytes, mime, updated_at: now() }); },
+  async deleteAnthem(code) { db.anthems.delete(code); },
   async listRaces(locationId) {
     return db.races.filter(r => !locationId || r.location_id === locationId)
       .sort((a, b) => (b.race_date || "").localeCompare(a.race_date || "") || b.created_at.localeCompare(a.created_at)).map(listRow);

@@ -31,6 +31,9 @@ module.exports = {
       created_by INTEGER REFERENCES skirennen.users(id), created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_by INTEGER REFERENCES skirennen.users(id), updated_at TIMESTAMPTZ NOT NULL DEFAULT now())`);
     await q(`CREATE INDEX IF NOT EXISTS races_loc_date ON skirennen.races (location_id, race_date DESC)`);
+    await q(`CREATE TABLE IF NOT EXISTS skirennen.anthems (
+      code TEXT PRIMARY KEY, name TEXT NOT NULL DEFAULT '', bytes BYTEA NOT NULL, mime TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now())`);
     await q(`CREATE TABLE IF NOT EXISTS skirennen.assets (
       location_id INTEGER NOT NULL REFERENCES skirennen.locations(id), key TEXT NOT NULL, bytes BYTEA NOT NULL,
       mime TEXT NOT NULL DEFAULT 'application/octet-stream', updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -76,6 +79,15 @@ module.exports = {
       ON CONFLICT (location_id, key) DO UPDATE SET bytes=EXCLUDED.bytes, mime=EXCLUDED.mime, updated_at=now()`, [id, key, bytes, mime]);
   },
   async deleteAsset(id, key) { await q(`DELETE FROM skirennen.assets WHERE location_id=$1 AND key=$2`, [id, key]); },
+
+  // anthems (shared by all locations)
+  async listAnthems() { return (await q(`SELECT code, name, octet_length(bytes)::int AS size, updated_at FROM skirennen.anthems ORDER BY code`)).rows; },
+  async getAnthem(code) { return (await q(`SELECT bytes, mime FROM skirennen.anthems WHERE code=$1`, [code])).rows[0] || null; },
+  async setAnthem(code, name, bytes, mime) {
+    await q(`INSERT INTO skirennen.anthems (code, name, bytes, mime) VALUES ($1,$2,$3,$4)
+      ON CONFLICT (code) DO UPDATE SET name=EXCLUDED.name, bytes=EXCLUDED.bytes, mime=EXCLUDED.mime, updated_at=now()`, [code, name, bytes, mime]);
+  },
+  async deleteAnthem(code) { await q(`DELETE FROM skirennen.anthems WHERE code=$1`, [code]); },
 
   // races
   async listRaces(locationId) {

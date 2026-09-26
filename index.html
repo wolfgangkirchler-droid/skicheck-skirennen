@@ -244,6 +244,100 @@ details.removed summary{cursor:pointer;color:var(--slate);padding:8px 0}
   .group > .gh{grid-template-columns:auto 1fr}
   .gtools{grid-column:1/-1;justify-content:flex-start}
 }
+.btn.big{min-height:44px;padding:10px 20px;font-size:16px;font-weight:600}
+.cere{display:grid;grid-template-columns:minmax(320px,1.1fr) minmax(320px,1fr);gap:18px;align-items:start}
+.flow{list-style:none;margin:0;padding:0}
+.flow li{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+.flow li:last-child{border-bottom:0}
+.flow li.off{opacity:.45}
+.flow .fnum{font:700 22px "Barlow Condensed",sans-serif;color:var(--glacier);width:26px;text-align:center;flex:none}
+.flow li.fixed .fnum{color:var(--slate)}
+.fchk input{width:18px;height:18px}
+.miniflag{height:14px;width:auto;vertical-align:-2px;margin-right:6px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.seg{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}.seg label{display:flex;gap:6px;align-items:center}
+.small-drop{padding:22px 16px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+.thumb{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000}
+.thumb img,.thumb video{width:100%;height:80px;object-fit:cover;display:block}
+.thumb span{display:block;font-size:11.5px;padding:3px 6px;background:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb .iconbtn{position:absolute;top:4px;right:4px;width:26px;height:26px;background:var(--paper)}
+.anth .arow{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.chkline{display:flex;gap:8px;align-items:center;font-weight:500}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;align-items:center}
+kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 7px;font:600 12.5px ui-monospace,Menlo,monospace;background:var(--snow)}
+@media (max-width:900px){.cere{grid-template-columns:1fr}}
+
+/* presentation (video wall) */
+#pres{position:fixed;inset:0;z-index:200;background:#0B1030;color:#fff;overflow:hidden;font-family:Barlow,"Segoe UI",Arial,sans-serif;cursor:none;outline:none;padding:0}
+#pres.awake{cursor:default}
+#pres .pbg,#pres .pbg>*{position:absolute;inset:0}
+#pres .pbg.brand{background:radial-gradient(ellipse at 50% 125%,#2F6FC0 0%,#1B2452 55%,#0B1030 100%)}
+#pres .pbg .stripes{background:repeating-linear-gradient(-58deg,rgba(255,255,255,.06) 0 3.2vw,transparent 3.2vw 6.4vw);-webkit-mask-image:linear-gradient(180deg,transparent 55%,#000 100%);mask-image:linear-gradient(180deg,transparent 55%,#000 100%)}
+#pres .pbg.media .stripes{display:none}
+#pres .pbg video,#pres .pbg img{width:100%;height:100%;object-fit:cover}
+#pres .ph{opacity:0;transition:opacity 1.6s ease}
+#pres .ph.on{opacity:1;animation:kb 10s linear forwards}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08)}}
+#pres .pbg .shade{background:linear-gradient(180deg,rgba(11,16,48,.78) 0%,rgba(11,16,48,.5) 40%,rgba(11,16,48,.82) 100%)}
+#pres .pbg.brand .shade{display:none}
+#pres .ptop{position:absolute;top:3.5vh;left:4vw;right:4vw;display:flex;justify-content:space-between;align-items:center;z-index:3}
+#pres .ptop img{height:9vh;width:auto}
+#pres .pev{text-align:right;display:flex;flex-direction:column}
+#pres .pev b{font:700 3.4vh "Barlow Condensed",sans-serif}#pres .pev span{font-size:2.4vh;opacity:.8}
+#pres .pstage{position:absolute;top:16vh;bottom:6vh;left:4vw;right:4vw;z-index:2}
+#pres .pslide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
+#pres .pslide.show{opacity:1}#pres .pslide.leave{opacity:0}
+#pres .pcenter{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#pres .pcenter h1{font:700 16vh/.95 "Barlow Condensed",sans-serif;letter-spacing:.01em;text-shadow:0 .6vh 3vh rgba(0,0,0,.4);margin:0}
+#pres .pkicker{font:600 3vh Barlow,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#F2C94C;margin-bottom:2vh}
+#pres .psub{font:600 4.4vh Barlow,sans-serif;margin-top:3vh}#pres .pdate{font-size:3vh;opacity:.8;margin-top:1vh}
+#pres .phead{display:flex;align-items:baseline;gap:2vw;border-bottom:.35vh solid #D51F2B;padding-bottom:1.4vh}
+#pres .plabel{font:600 2.2vh Barlow,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.75}
+#pres .phead h2{font:700 7vh/1 "Barlow Condensed",sans-serif;flex:1;margin:0}
+#pres .pn{font-size:2.6vh;opacity:.8}
+#pres .pbody{position:absolute;top:12vh;bottom:0;left:0;right:0;display:grid;grid-template-columns:1.25fr 1fr;gap:4vw}
+#pres .podium{display:flex;align-items:flex-end;gap:1.2vw;height:100%}
+#pres .pcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;min-width:0}
+#pres .pwin{text-align:center;padding:0 .4vw 1.6vh;opacity:0;transform:translateY(3vh);animation:pin .8s cubic-bezier(.2,.8,.2,1) forwards}
+#pres .p3 .pwin{animation-delay:.5s}#pres .p2 .pwin{animation-delay:1.3s}#pres .p1 .pwin{animation-delay:2.2s}
+@keyframes pin{to{opacity:1;transform:none}}
+#pres .flags{display:flex;justify-content:center;gap:.6vw;margin-bottom:1.2vh}
+#pres canvas.wflag{width:8vw;height:6.2vw;filter:drop-shadow(0 .6vh 1vh rgba(0,0,0,.35))}
+#pres canvas.wflag.big{width:11vw;height:8.4vw}
+#pres .p1 canvas.wflag.big{width:13.5vw;height:10.2vw}
+#pres .noflag{font:700 3vh "Barlow Condensed",sans-serif;border:.2vh solid rgba(255,255,255,.5);border-radius:.6vh;padding:.8vh 1.2vw}
+#pres .pname{font:700 3.6vh/1.1 "Barlow Condensed",sans-serif;text-shadow:0 .3vh 1.2vh rgba(0,0,0,.5);overflow-wrap:anywhere}
+#pres .p1 .pname{font-size:4.6vh}
+#pres .pnat{font-size:2.3vh;opacity:.85;margin-bottom:.6vh}
+#pres .pstep{border-radius:1vh 1vh 0 0;display:flex;align-items:flex-start;justify-content:center;color:#1B2452;box-shadow:inset 0 .6vh 0 rgba(255,255,255,.45),0 1vh 3vh rgba(0,0,0,.35);transform-origin:bottom;transform:scaleY(0);animation:grow .9s cubic-bezier(.2,.8,.2,1) forwards}
+#pres .pstep span{font:700 10vh/1.25 "Barlow Condensed",sans-serif}
+#pres .p1 .pstep{height:24vh;background:linear-gradient(180deg,#F6D365,#D9A628);animation-delay:1.8s}
+#pres .p2 .pstep{height:17vh;background:linear-gradient(180deg,#EEF2F7,#AEB8C6);animation-delay:.9s}
+#pres .p3 .pstep{height:12vh;background:linear-gradient(180deg,#E8A874,#B8733F);animation-delay:.1s}
+#pres .p3 .pstep span{font-size:8vh}
+@keyframes grow{to{transform:scaleY(1)}}
+#pres .prank{align-self:center;max-height:100%;overflow:hidden}
+#pres .prank table{width:100%;border-collapse:collapse;table-layout:fixed}
+#pres .prank tr{opacity:0;animation:fadein .5s ease forwards}
+@keyframes fadein{to{opacity:1}}
+#pres .prank td{height:var(--rh);font-size:calc(var(--rh) * .5);padding:0 .8vw;border-bottom:.15vh solid rgba(255,255,255,.14);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pres .prank tr.pt3 td{background:rgba(255,255,255,.09)}
+#pres .prank .rk{font-family:"Barlow Condensed",sans-serif;font-weight:700;width:10%;text-align:right;color:#F2C94C}
+#pres .prank .nm{font-weight:600;width:50%}
+#pres .prank .nt{opacity:.8;width:16%}#pres .prank .tm{font-variant-numeric:tabular-nums;text-align:right;width:21%;opacity:.9}
+#pres .pall{position:absolute;top:12vh;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#pres .pallt{font:700 5vh "Barlow Condensed",sans-serif;color:#F2C94C;margin-bottom:4vh;text-align:center}
+#pres .pgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:2vh 2vw;max-width:88vw}
+#pres .pcard{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.1);border:.2vh solid rgba(255,255,255,.2);border-radius:1.4vh;padding:2vh 2vw;min-width:18vw;opacity:0;transform:translateY(3vh);animation:pin .7s ease forwards}
+#pres .pcard .medal{width:6vh;height:6vh;border-radius:50%;background:linear-gradient(180deg,#F6D365,#D9A628);color:#1B2452;font:700 4vh/6vh "Barlow Condensed",sans-serif;text-align:center;margin-bottom:1vh}
+#pres .pcard b{font:700 3.6vh "Barlow Condensed",sans-serif}#pres .pcard span{opacity:.8;font-size:2.2vh}
+#pres .pfoot{position:absolute;left:4vw;right:4vw;bottom:2vh;display:flex;justify-content:space-between;font-size:1.8vh;opacity:.7;z-index:3}
+#pres .phint{position:absolute;left:50%;bottom:2vh;transform:translateX(-50%);background:rgba(0,0,0,.55);padding:.8vh 1.6vw;border-radius:99px;font-size:1.8vh;z-index:4;transition:opacity .8s;white-space:nowrap}
+#pres.hinted .phint{opacity:0}#pres.hinted.awake .phint{opacity:1}
+#pres .pclose{position:absolute;top:1.5vh;right:1.5vw;z-index:5;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:8px 14px;font:600 15px Barlow,sans-serif;cursor:pointer;opacity:0;transition:opacity .3s}
+#pres.awake .pclose{opacity:1}
+@media (prefers-reduced-motion: reduce){#pres .pwin,#pres .pstep,#pres .prank tr,#pres .pcard{animation-duration:.01s!important;animation-delay:0s!important}}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -399,10 +493,11 @@ async function readTable(file) {
 }
 
 /* ============ countries (German name -> 3-letter code as used by Lympik/FIS, e.g. GER) ============ */
+const COUNTRY_NAMES = {};
 const COUNTRY = (() => {
   const list = `GER:Deutschland,Germany,BRD,DE,DEU|AUT:Österreich,Oesterreich,Austria,AT|SUI:Schweiz,Switzerland,CH,CHE|ITA:Italien,Italy,IT|FRA:Frankreich,France,FR|GBR:Vereinigtes Königreich,Großbritannien,Grossbritannien,England,Schottland,Wales,Nordirland,United Kingdom,Great Britain,UK,GB|IRL:Irland,Ireland,IE|NED:Niederlande,Holland,Netherlands,NL,NLD|BEL:Belgien,Belgium,BE|LUX:Luxemburg,Luxembourg,LU|LIE:Liechtenstein,LI|DEN:Dänemark,Daenemark,Denmark,DK,DNK|SWE:Schweden,Sweden,SE|NOR:Norwegen,Norway,NO|FIN:Finnland,Finland,FI|ISL:Island,Iceland,IS|POL:Polen,Poland,PL|CZE:Tschechien,Tschechische Republik,Czechia,Czech Republic,CZ|SVK:Slowakei,Slovakia,SK|HUN:Ungarn,Hungary,HU|SLO:Slowenien,Slovenia,SI,SVN|CRO:Kroatien,Croatia,HR,HRV|SRB:Serbien,Serbia,RS|BIH:Bosnien und Herzegowina,Bosnien-Herzegowina,Bosnia and Herzegovina,BA|MNE:Montenegro,ME|MKD:Nordmazedonien,Mazedonien,North Macedonia,MK|ALB:Albanien,Albania,AL|KOS:Kosovo,XK|GRE:Griechenland,Greece,GR,GRC|BUL:Bulgarien,Bulgaria,BG,BGR|ROU:Rumänien,Rumaenien,Romania,RO|MDA:Moldau,Republik Moldau,Moldawien,Moldova,MD|UKR:Ukraine,UA|BLR:Belarus,Weißrussland,Weissrussland,BY|RUS:Russland,Russische Föderation,Russia,RU|LTU:Litauen,Lithuania,LT|LAT:Lettland,Latvia,LV,LVA|EST:Estland,Estonia,EE|ESP:Spanien,Spain,ES|POR:Portugal,PT,PRT|AND:Andorra,AD|MON:Monaco,MC|SMR:San Marino,SM|MLT:Malta,MT|CYP:Zypern,Cyprus,CY|TUR:Türkei,Tuerkei,Turkey,Türkiye,TR|ISR:Israel,IL|USA:Vereinigte Staaten,Vereinigte Staaten von Amerika,USA,United States,US|CAN:Kanada,Canada,CA|MEX:Mexiko,Mexico,MX|BRA:Brasilien,Brazil,BR|ARG:Argentinien,Argentina,AR|CHI:Chile,CL,CHL|COL:Kolumbien,Colombia,CO|PER:Peru,PE|URU:Uruguay,UY|VEN:Venezuela,VE|ECU:Ecuador,EC|AUS:Australien,Australia,AU|NZL:Neuseeland,New Zealand,NZ|JPN:Japan,JP|CHN:China,Volksrepublik China,CN|KOR:Südkorea,Korea,Republik Korea,South Korea,KR|IND:Indien,India,IN|SGP:Singapur,Singapore,SG|HKG:Hongkong,Hong Kong,HK|TPE:Taiwan,TW|THA:Thailand,TH|PHI:Philippinen,Philippines,PH|INA:Indonesien,Indonesia,ID|MAS:Malaysia,MY|VIE:Vietnam,VN|RSA:Südafrika,South Africa,ZA|EGY:Ägypten,Egypt,EG|MAR:Marokko,Morocco,MA|TUN:Tunesien,Tunisia,TN|NGR:Nigeria,NG|KEN:Kenia,Kenya,KE|UAE:Vereinigte Arabische Emirate,United Arab Emirates,AE|KSA:Saudi-Arabien,Saudi Arabia,SA|QAT:Katar,Qatar,QA|KUW:Kuwait,KW|IRI:Iran,IR|LBN:Libanon,Lebanon,LB|JOR:Jordanien,Jordan,JO|GEO:Georgien,Georgia,GE|ARM:Armenien,Armenia,AM|AZE:Aserbaidschan,Azerbaijan,AZ|KAZ:Kasachstan,Kazakhstan,KZ|UZB:Usbekistan,Uzbekistan,UZ|MGL:Mongolei,Mongolia,MN|PAK:Pakistan,PK|BAN:Bangladesch,Bangladesh,BD|SRI:Sri Lanka,LK|NEP:Nepal,NP|CRC:Costa Rica,CR|PAN:Panama,PA|DOM:Dominikanische Republik,DO|CUB:Kuba,Cuba,CU|JAM:Jamaika,Jamaica,JM`;
   const m = new Map();
-  for (const part of list.split("|")) { const [code, names] = part.split(":"); m.set(norm(code), code); for (const n of names.split(",")) m.set(norm(n), code); }
+  for (const part of list.split("|")) { const [code, names] = part.split(":"); COUNTRY_NAMES[code] = names.split(",")[0]; m.set(norm(code), code); for (const n of names.split(",")) m.set(norm(n), code); }
   return m;
 })();
 function nationCode(raw) {
@@ -461,7 +556,8 @@ const blankState = () => ({
   event: { title: "", date: "" },
   participants: [], ignoredClusters: [], groupOrder: [], groupMeta: {}, csvDelim: ";",
   results: [], resOrder: [], resMeta: {},
-  certScope: "all", previewIdx: 0, selField: "name", timeStart: "10:30", timeStep: 8
+  certScope: "all", previewIdx: 0, selField: "name", timeStart: "10:30", timeStep: 8,
+  cere: { skip: {}, bg: "default", anthem: true, photoSec: 8, from: 0 }
 });
 let S = blankState();
 let SET = null, SET_LOC = null;   // certificate settings of the race's location
@@ -477,6 +573,7 @@ const isoToDe = d => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || "")
 async function api(method, url, body, opts = {}) {
   const headers = { "X-Requested-With": "skirennen" }; let payload;
   if (body instanceof Uint8Array || body instanceof ArrayBuffer || body instanceof Blob) { payload = body; headers["Content-Type"] = "application/octet-stream"; if (opts.type) headers["X-Asset-Type"] = opts.type; }
+  if (opts.headers) Object.assign(headers, opts.headers);
   else if (body !== undefined) { payload = JSON.stringify(body); headers["Content-Type"] = "application/json"; }
   let r;
   try { r = await fetch(url, { method, headers, body: payload, credentials: "same-origin" }); }
@@ -925,7 +1022,7 @@ async function runPdf(label, fn, filename) {
   try { stdFontUsed = false; const bytes = await fn(); busy(null); await saveFile(filename, bytes, "application/pdf"); if (stdFontUsed) setTimeout(() => toast("Hinweis: Die Schriftbibliothek war nicht erreichbar, daher wurde Helvetica verwendet.", 6000), 3400); }
   catch (e) { console.error(e); busy(null); toast("PDF konnte nicht erstellt werden: " + (e.message || e)); }
 }
-function pickFile(accept, cb) { const inp = $("#fileInput"); inp.value = ""; inp.accept = accept; inp.onchange = () => inp.files[0] && cb(inp.files[0]); inp.click(); }
+function pickFile(accept, cb) { const inp = $("#fileInput"); inp.value = ""; inp.multiple = false; inp.accept = accept; inp.onchange = () => inp.files[0] && cb(inp.files[0]); inp.click(); }
 async function onParticipantsFile(file) {
   try {
     const wb = await readTable(file); const list = importParticipants(wb);
@@ -956,7 +1053,7 @@ function render() {
   const main = $("#main");
   if (VIEW === "race" && RACE) {
     renderSteps();
-    const fns = [viewParticipants, viewStartList, viewResults, viewCerts];
+    const fns = [viewParticipants, viewStartList, viewResults, viewCerts, viewCeremony];
     main.innerHTML = fns[S.tab]();
     afterRender[S.tab] && afterRender[S.tab]();
     return;
@@ -975,7 +1072,8 @@ function renderSteps() {
     ["Teilnehmer", S.participants.length ? `${act} Kinder${cl ? `, ${cl} Duplikat${cl > 1 ? "e" : ""} offen` : ""}` : "Odoo-Export laden"],
     ["Startliste", !S.participants.length ? "nach dem Import" : ni.missing ? `${ni.missing} ohne Nummer` : `${S.groupOrder.length} Gruppen`],
     ["Ergebnisse", S.results.length ? `${S.results.length} Zeiten` : "Lympik-Export laden"],
-    ["Urkunden", S.results.length ? `${S.results.length} Urkunden` : "Vorlage und Felder"]
+    ["Urkunden", S.results.length ? `${S.results.length} Urkunden` : "Vorlage und Felder"],
+    ["Siegerehrung", S.results.length ? "Präsentation" : "nach den Ergebnissen"]
   ];
   $("#steps").hidden = false;
   $("#steps").innerHTML = steps.map(([l, s], i) => `<button role="tab" aria-selected="${S.tab === i}" data-tab="${i}"><span class="n">${i + 1}</span><span class="l"><b>${l}</b><span>${esc(s)}</span></span></button>`).join("");
@@ -1310,6 +1408,20 @@ document.addEventListener("click", async e => {
   switch (a) {
     case "reloadRace": { const rid = RACE && RACE.id; if (!rid) break; RACE = null; saveStateV = "saved"; await openRace(rid); break; }
     case "retrySave": await flushSave(); break;
+    case "presStart": startPresentation(); break;
+    case "mediaDel": { MEDIA.items = MEDIA.items.filter(i => { if (i.id === id) { URL.revokeObjectURL(i.url); return false; } return true; }); await saveMedia(); render(); break; }
+    case "anthemTest": { const code = b.dataset.code; if (!testAudio) testAudio = new Audio(); if (!testAudio.paused && testAudio.dataset.code === code) { testAudio.pause(); break; } testAudio.src = "/api/anthems/" + code; testAudio.dataset.code = code; const pp = testAudio.play(); if (pp) pp.catch(() => toast("Abspielen nicht möglich")); toast(`Probe: ${countryName(code)} (nochmal klicken zum Stoppen)`, 2500); break; }
+    case "anthemUp": case "anthemUpSel": {
+      const code = a === "anthemUpSel" ? $("#anthemCode").value : b.dataset.code;
+      pickFile("audio/*,.mp3,.m4a,.aac,.wav,.ogg", async file => {
+        const ext = (file.name.split(".").pop() || "").toLowerCase();
+        const type = file.type && file.type.startsWith("audio/") ? file.type : ({ mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac", wav: "audio/wav", ogg: "audio/ogg" })[ext] || "audio/mpeg";
+        busy("Hymne wird hochgeladen …");
+        try { await api("PUT", "/api/anthems/" + code, file, { type, headers: { "X-File-Name": encodeURIComponent(file.name) } }); await loadAnthems(true); render(); toast(`Hymne für ${countryName(code)} gespeichert`); }
+        catch (err) { toast(err.message, 5000); } finally { busy(null); }
+      }); break;
+    }
+    case "anthemDel": if (confirm(`Hymne für ${countryName(b.dataset.code)} löschen? Sie fehlt dann an allen Standorten.`)) { try { await api("DELETE", "/api/anthems/" + b.dataset.code); await loadAnthems(true); render(); } catch (err) { toast(err.message); } } break;
     case "tplNone": {
       if (!confirm("Urkunden dieses Standorts ohne Grafik drucken (für vorgedrucktes Papier)? Eine hochgeladene Vorlage wird dabei entfernt.")) break;
       busy("Wird umgestellt …");
@@ -1401,6 +1513,11 @@ document.addEventListener("change", e => {
   }
   if (t.dataset.allfirst != null) { const c = t.dataset.allfirst; S.resMeta[c] = { ...(S.resMeta[c] || {}), allFirst: t.checked }; save(); render(); return; }
   if (t.id === "certScope") { S.certScope = t.value; save(); return; }
+  if (t.dataset.cereskip != null) { const c = t.dataset.cereskip; if (t.checked) delete S.cere.skip[c]; else S.cere.skip[c] = true; S.cere.from = 0; save(); render(); return; }
+  if (t.name === "cerebg") { S.cere.bg = t.value; save(); return; }
+  if (t.id === "photoSec") { S.cere.photoSec = +t.value; save(); return; }
+  if (t.id === "anthemAuto") { S.cere.anthem = t.checked; save(); return; }
+  if (t.id === "presFrom") { S.cere.from = +t.value; save(); return; }
   if (t.id === "tplOrient" && SET && SET.templateMeta && SET.templateMeta.kind === "none") {
     const land = t.value === "l"; SET.templateMeta = { ...SET.templateMeta, w: land ? A4.h : A4.w, h: land ? A4.w : A4.h };
     save(); loadTemplate().then(() => rerenderPanelKeepCanvas()); return;
@@ -1424,6 +1541,315 @@ document.addEventListener("input", e => {
 });
 
 /* ============ boot ============ */
+/* ============ step 5: award ceremony (video wall presentation) ============ */
+let FLAGS = null, FLAG_IMG = {}, flagsPromise = null, ANTHEMS = null;
+function ensureFlags() {
+  if (flagsPromise) return flagsPromise;
+  flagsPromise = fetch("/flags.json", { credentials: "same-origin" }).then(r => r.ok ? r.json() : {}).catch(() => ({})).then(j => {
+    FLAGS = j || {};
+    for (const [code, src] of Object.entries(FLAGS)) { const im = new Image(); im.src = src; FLAG_IMG[code] = im; }
+    return FLAGS;
+  });
+  return flagsPromise;
+}
+async function loadAnthems(force) {
+  if (ANTHEMS && !force) return ANTHEMS;
+  try { ANTHEMS = (await api("GET", "/api/anthems")).anthems; } catch (e) { ANTHEMS = ANTHEMS || []; }
+  return ANTHEMS;
+}
+const hasAnthem = code => !!(ANTHEMS && ANTHEMS.some(a => a.code === code));
+const countryName = code => COUNTRY_NAMES[code] || code || "";
+
+/* ---- local media (video / photos), stored only on this device ---- */
+const mediaDb = (() => {
+  let p;
+  const open = () => p ||= new Promise((res, rej) => { const r = indexedDB.open("skirennen-media", 1); r.onupgradeneeded = () => r.result.createObjectStore("m"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  return {
+    async get(k) { try { const db = await open(); return await new Promise((res, rej) => { const q = db.transaction("m").objectStore("m").get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); } catch (e) { return undefined; } },
+    async set(k, v) { const db = await open(); await new Promise((res, rej) => { const t = db.transaction("m", "readwrite"); t.objectStore("m").put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); }
+  };
+})();
+let MEDIA = { raceId: null, items: [] };
+async function loadMedia() {
+  if (!RACE || MEDIA.raceId === RACE.id) return;
+  MEDIA.items.forEach(i => URL.revokeObjectURL(i.url));
+  const saved = await mediaDb.get("race:" + RACE.id);
+  MEDIA = { raceId: RACE.id, items: (saved || []).map(i => ({ ...i, url: URL.createObjectURL(i.blob) })) };
+}
+async function saveMedia() {
+  try { await mediaDb.set("race:" + MEDIA.raceId, MEDIA.items.map(({ id, type, name, blob }) => ({ id, type, name, blob }))); }
+  catch (e) { toast("Die Medien bleiben nur bis zum Neuladen der Seite erhalten, der Browser erlaubt kein dauerhaftes Speichern.", 6000); }
+}
+async function addMediaFiles(files) {
+  await loadMedia(); let added = 0;
+  for (const f of files) {
+    if (/^video\//.test(f.type) || /\.(mp4|m4v|mov|webm)$/i.test(f.name)) {
+      MEDIA.items.filter(i => i.type === "video").forEach(i => URL.revokeObjectURL(i.url));
+      MEDIA.items = MEDIA.items.filter(i => i.type !== "video");
+      MEDIA.items.unshift({ id: uid(), type: "video", name: f.name, blob: f, url: URL.createObjectURL(f) }); added++;
+    } else if (/^image\//.test(f.type) || /\.(jpe?g|png|webp|heic)$/i.test(f.name)) {
+      MEDIA.items.push({ id: uid(), type: "image", name: f.name, blob: f, url: URL.createObjectURL(f) }); added++;
+    }
+  }
+  if (!added) { toast("Bitte Videos (MP4, MOV) oder Fotos (JPG, PNG) verwenden."); return; }
+  S.cere.bg = "media"; save();
+  busy("Medien werden auf diesem Gerät gespeichert …"); await saveMedia(); busy(null);
+  render(); toast(added === 1 ? "Hinzugefügt" : added + " Dateien hinzugefügt");
+}
+
+/* ---- ranking data per group ---- */
+function podiumData(cat) {
+  const list = rankedCat(cat); const meta = S.resMeta[cat] || {};
+  const byRank = r => list.filter(x => x.rank === r);
+  const first = byRank(1);
+  const nations = [...new Set(first.map(x => str(x.r.nation).toUpperCase()).filter(Boolean))];
+  return { list, allFirst: !!meta.allFirst, p1: first, p2: byRank(2), p3: byRank(3), anthemCode: !meta.allFirst && first.length && nations.length === 1 ? nations[0] : null };
+}
+function presSlides() {
+  const s = [{ type: "intro" }];
+  for (const cat of resCats()) if (!S.cere.skip[cat] && rankedCat(cat).length) s.push({ type: "group", cat });
+  s.push({ type: "end" });
+  return s;
+}
+
+/* ---- setup view ---- */
+function viewCeremony() {
+  const cats = resCats();
+  if (!S.results.length) return `<div class="bar"><h2>Siegerehrung</h2></div><div class="notice info"><span>Zuerst die Ergebnisse aus Lympik laden. Danach wird hier die Präsentation für die Video-Wall vorbereitet.</span><button class="btn sm" data-tab="2">Zu den Ergebnissen</button></div>`;
+  const slides = presSlides();
+  const needed = [...new Set(cats.filter(c => !S.cere.skip[c]).map(c => podiumData(c).anthemCode).filter(Boolean))];
+  const video = MEDIA.items.find(i => i.type === "video"); const photos = MEDIA.items.filter(i => i.type === "image");
+  const flagImg = code => FLAGS && FLAGS[code] ? `<img class="miniflag" src="${FLAGS[code]}" alt="">` : "";
+  let h = `<div class="bar"><h2>Siegerehrung</h2>
+    <span class="field"><span>Starten bei</span><select id="presFrom">${slides.map((s, i) => `<option value="${i}" ${i === (S.cere.from || 0) ? "selected" : ""}>${s.type === "intro" ? "Titelfolie" : s.type === "end" ? "Schlussfolie" : esc(s.cat)}</option>`).join("")}</select></span>
+    <button class="btn red big" data-act="presStart">▶︎ Präsentation starten</button></div>
+  <div class="cere">
+    <section class="panel"><header><h3>Ablauf</h3><span class="muted small">${slides.length} Folien, Reihenfolge wie in der Ergebnisliste</span></header>
+      <div class="body"><ol class="flow">
+        <li class="fixed"><span class="fnum">–</span><span><b>Titelfolie</b><br><span class="muted small">${esc(S.event.title)} ${esc(S.event.date)}</span></span></li>
+        ${cats.map((c, i) => { const d = podiumData(c); const on = !S.cere.skip[c];
+          const win = d.allFirst ? `<span class="muted small">Alle ${d.list.length} Kinder auf Platz 1</span>` : d.p1.length ? `<span class="small">${flagImg(str(d.p1[0].r.nation).toUpperCase())}<b>${esc(d.p1.map(x => x.r.name).join(", "))}</b> <span class="muted">${esc(d.p1.map(x => x.r.nation).join(", "))}</span></span>` : `<span class="muted small">keine Zeiten</span>`;
+          const an = d.anthemCode ? (hasAnthem(d.anthemCode) ? `<span class="pill ok">♪ Hymne ${esc(d.anthemCode)}</span>` : `<span class="pill warn">keine Hymne ${esc(d.anthemCode)}</span>`) : "";
+          return `<li class="${on ? "" : "off"}"><label class="fchk"><input type="checkbox" data-cereskip="${esc(c)}" ${on ? "checked" : ""} aria-label="${esc(c)} zeigen"></label>
+            <span class="fnum">${i + 1}</span><span style="flex:1;min-width:0"><b>${esc(c)}</b> <span class="muted small">(${d.list.length})</span><br>${win}</span>${an}</li>`; }).join("")}
+        <li class="fixed"><span class="fnum">–</span><span><b>Schlussfolie</b><br><span class="muted small">Herzlichen Glückwunsch an alle Kinder!</span></span></li>
+      </ol><p class="muted small" style="margin:8px 0 0">Die Reihenfolge änderst du im Schritt „Ergebnisse“ mit den Pfeilen. Abgehakte Gruppen werden übersprungen.</p></div>
+    </section>
+    <div>
+      <section class="panel"><header><h3>Hintergrund</h3></header><div class="body">
+        <div class="seg"><label><input type="radio" name="cerebg" value="default" ${S.cere.bg !== "media" ? "checked" : ""}> skiCHECK-Design</label><label><input type="radio" name="cerebg" value="media" ${S.cere.bg === "media" ? "checked" : ""}> Video oder Fotos vom Rennen</label></div>
+        <div class="drop small-drop" id="dropM" tabindex="0" role="button"><b>Video oder Fotos hierher ziehen</b><br><span class="muted small">oder klicken zum Auswählen. Ein Video hat Vorrang vor Fotos. Es läuft ohne Ton in Schleife.</span></div>
+        ${MEDIA.items.length ? `<div class="thumbs">${video ? `<div class="thumb"><video src="${video.url}" muted playsinline preload="metadata"></video><span>${esc(video.name)}</span><button class="iconbtn" data-act="mediaDel" data-id="${video.id}" aria-label="Entfernen">${ICON.x}</button></div>` : ""}${photos.map(p => `<div class="thumb"><img src="${p.url}" alt=""><span>${esc(p.name)}</span><button class="iconbtn" data-act="mediaDel" data-id="${p.id}" aria-label="Entfernen">${ICON.x}</button></div>`).join("")}</div>` : ""}
+        ${photos.length && !video ? `<label class="field" style="margin-top:10px;max-width:220px"><span>Foto wechselt alle</span><select id="photoSec">${[5, 8, 12, 20].map(n => `<option value="${n}" ${S.cere.photoSec === n ? "selected" : ""}>${n} Sekunden</option>`).join("")}</select></label>` : ""}
+        <p class="muted small" style="margin:10px 0 0">Video und Fotos bleiben nur auf diesem Gerät gespeichert und werden nicht hochgeladen. Für die Siegerehrung also am Rechner der Video-Wall hineinziehen.</p>
+      </div></section>
+      <section class="panel"><header><h3>Hymnen</h3></header><div class="body">
+        <label class="chkline"><input type="checkbox" id="anthemAuto" ${S.cere.anthem ? "checked" : ""}> Hymne des 1. Platzes automatisch abspielen</label>
+        <p class="muted small" style="margin:6px 0 12px">Sie startet, sobald der Sieger auf dem Podest erscheint, und blendet beim Weiterschalten aus. Bei Gleichstand auf Platz 1 mit verschiedenen Nationen und bei „Alle auf Rang 1“ bleibt es still.</p>
+        ${needed.length ? `<div class="anth">${needed.map(code => `<div class="arow">${flagImg(code)}<b>${esc(countryName(code))}</b> <span class="muted small">${esc(code)}</span><span style="flex:1"></span>
+          ${hasAnthem(code) ? `<button class="btn sm" data-act="anthemTest" data-code="${code}">▶︎ Probe</button>` : `<span class="pill warn">fehlt</span>`}
+          <button class="btn sm" data-act="anthemUp" data-code="${code}">${ICON.up2}${hasAnthem(code) ? "Ersetzen" : "Hochladen"}</button></div>`).join("")}</div>` : `<p class="muted small">Für diese Siegerehrung wird keine Hymne gebraucht.</p>`}
+        <details style="margin-top:12px"><summary class="small" style="cursor:pointer">Alle hinterlegten Hymnen (${(ANTHEMS || []).length})</summary>
+          <div class="anth" style="margin-top:8px">${(ANTHEMS || []).map(a => `<div class="arow">${flagImg(a.code)}<b>${esc(countryName(a.code))}</b> <span class="muted small">${esc(a.name || a.code)}</span><span style="flex:1"></span><button class="btn sm" data-act="anthemTest" data-code="${a.code}">▶︎</button><button class="iconbtn" data-act="anthemDel" data-code="${a.code}" aria-label="Löschen">${ICON.x}</button></div>`).join("") || `<p class="muted small">Noch keine.</p>`}
+            <div class="arow" style="margin-top:8px"><select id="anthemCode" class="cell" style="border-color:var(--line);max-width:220px">${Object.keys(COUNTRY_NAMES).sort((a, b) => cmpDe(countryName(a), countryName(b))).map(c => `<option value="${c}">${esc(countryName(c))} (${c})</option>`).join("")}</select><button class="btn sm" data-act="anthemUpSel">${ICON.up2}Hymne hochladen</button></div>
+          </div></details>
+        <p class="muted small" style="margin:12px 0 0">Hymnen gelten für alle Standorte. Frei nutzbare Aufnahmen gibt es z. B. von der US Navy Band (gemeinfrei) auf Wikimedia Commons. Für die öffentliche Wiedergabe gelten die Regeln deiner Veranstaltung.</p>
+      </div></section>
+      <section class="panel"><header><h3>Bedienung während der Präsentation</h3></header><div class="body keys">
+        <div><kbd>→</kbd> <kbd>Leertaste</kbd> oder Klick</div><div>nächste Folie</div>
+        <div><kbd>←</kbd></div><div>vorherige Folie</div>
+        <div><kbd>H</kbd></div><div>Hymne starten oder stoppen</div>
+        <div><kbd>M</kbd></div><div>Ton aus oder an</div>
+        <div><kbd>Esc</kbd></div><div><b>Präsentation beenden</b>, zurück in die App</div>
+      </div><div class="body muted small" style="padding-top:0">Ein Presenter-Klicker funktioniert ebenfalls. Hängt die Video-Wall als zweiter Bildschirm am Laptop, zieh das Browserfenster vor dem Start auf die Video-Wall.</div></section>
+    </div>
+  </div>`;
+  return h;
+}
+afterRender[4] = () => {
+  const d = $("#dropM");
+  if (d) {
+    d.addEventListener("dragover", e => { e.preventDefault(); d.classList.add("over"); });
+    d.addEventListener("dragleave", () => d.classList.remove("over"));
+    d.addEventListener("drop", e => { e.preventDefault(); d.classList.remove("over"); if (e.dataTransfer.files.length) addMediaFiles([...e.dataTransfer.files]); });
+    d.onclick = () => { const inp = $("#fileInput"); inp.value = ""; inp.accept = "video/*,image/*"; inp.multiple = true; inp.onchange = () => { inp.multiple = false; if (inp.files.length) addMediaFiles([...inp.files]); }; inp.click(); };
+    d.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); d.click(); } };
+  }
+  let again = false;
+  if (!FLAGS) { ensureFlags().then(() => { if (S.tab === 4 && VIEW === "race") render(); }); }
+  if (!ANTHEMS) { again = true; loadAnthems().then(() => { if (S.tab === 4 && VIEW === "race") render(); }); }
+  if (RACE && MEDIA.raceId !== RACE.id) { loadMedia().then(() => { if (S.tab === 4 && VIEW === "race") render(); }); }
+};
+
+/* ---- audio ---- */
+let anthemAudio = null, testAudio = null, anthemCur = null, anthemTimer = null, fadeTimer = null, presMuted = false;
+const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+function unlockAudio() {
+  if (!anthemAudio) { anthemAudio = new Audio(); anthemAudio.preload = "auto"; }
+  try { anthemAudio.src = SILENT_WAV; const p = anthemAudio.play(); if (p) p.catch(() => {}); } catch (e) {}
+}
+function fadeOutAnthem(ms = 1200) {
+  clearTimeout(anthemTimer); clearInterval(fadeTimer);
+  const a = anthemAudio; if (!a || a.paused) { anthemCur = null; presAnthemBadge(); return; }
+  const start = a.volume, steps = 20; let n = 0;
+  fadeTimer = setInterval(() => { n++; a.volume = Math.max(0, start * (1 - n / steps)); if (n >= steps) { clearInterval(fadeTimer); a.pause(); a.volume = 1; anthemCur = null; presAnthemBadge(); } }, ms / steps);
+}
+function playAnthem(code) {
+  if (!code || !hasAnthem(code) || !anthemAudio) return;
+  clearInterval(fadeTimer); anthemAudio.pause(); anthemAudio.volume = 1; anthemAudio.muted = presMuted;
+  anthemAudio.src = "/api/anthems/" + code; anthemCur = code;
+  const p = anthemAudio.play(); if (p) p.catch(() => { anthemCur = null; presAnthemBadge(); });
+  anthemAudio.onended = () => { anthemCur = null; presAnthemBadge(); };
+  presAnthemBadge();
+}
+
+/* ---- presentation ---- */
+let PRES = null;
+function startPresentation() {
+  if (PRES) return;
+  const slides = presSlides();
+  const from = Math.min(Math.max(0, +(S.cere.from || 0)), slides.length - 1);
+  const el = document.createElement("div"); el.id = "pres"; el.tabIndex = -1;
+  const video = S.cere.bg === "media" ? MEDIA.items.find(i => i.type === "video") : null;
+  const photos = S.cere.bg === "media" && !video ? MEDIA.items.filter(i => i.type === "image") : [];
+  el.innerHTML = `<div class="pbg ${video || photos.length ? "media" : "brand"}">
+      ${video ? `<video src="${video.url}" autoplay muted loop playsinline></video>` : ""}
+      ${photos.length ? `<img class="ph a" alt=""><img class="ph b" alt="">` : ""}
+      <div class="stripes"></div><div class="shade"></div></div>
+    <div class="ptop"><img src="${LOGO_WHITE}" alt="skiCHECK"><div class="pev"><b>${esc(S.event.title)}</b><span>${esc(S.event.date)}</span></div></div>
+    <div class="pstage"></div>
+    <div class="pfoot"><span class="panthem"></span><span class="pcount"></span></div>
+    <div class="phint">→ weiter &nbsp; ← zurück &nbsp; H Hymne &nbsp; M Ton &nbsp; Esc beenden</div>
+    <button class="pclose" aria-label="Präsentation beenden">✕ Beenden</button>`;
+  document.body.appendChild(el);
+  // fullscreen must be requested synchronously inside the click
+  const rfs = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (rfs) { try { const p = rfs.call(el); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+  unlockAudio();
+  document.documentElement.style.overflow = "hidden";
+  PRES = { el, slides, idx: -1, raf: 0, photos, photoIdx: 0, photoTimer: 0, idleTimer: 0 };
+  if (photos.length) startPhotos();
+  el.addEventListener("click", e => { if (e.target.closest(".pclose")) { closePresentation(); return; } presGo(PRES.idx + 1); });
+  el.addEventListener("mousemove", () => { el.classList.add("awake"); clearTimeout(PRES.idleTimer); PRES.idleTimer = setTimeout(() => el && el.classList.remove("awake"), 2200); });
+  setTimeout(() => el.classList.add("hinted"), 5000);
+  ensureFlags().then(() => {});
+  loadAnthems();
+  presGo(from);
+  const loop = t => { if (!PRES) return; drawFlags(t / 1000); PRES.raf = requestAnimationFrame(loop); };
+  PRES.raf = requestAnimationFrame(loop);
+  el.focus();
+}
+function startPhotos() {
+  const imgs = PRES.el.querySelectorAll(".ph"); let front = 0;
+  const show = () => {
+    const p = PRES.photos[PRES.photoIdx % PRES.photos.length]; PRES.photoIdx++;
+    const next = imgs[1 - front]; next.src = p.url; next.classList.remove("on"); void next.offsetWidth; next.classList.add("on");
+    next.style.animationDuration = (S.cere.photoSec + 2) + "s"; imgs[front].classList.remove("on"); front = 1 - front;
+  };
+  show(); if (PRES.photos.length > 1) PRES.photoTimer = setInterval(show, (S.cere.photoSec || 8) * 1000);
+}
+function closePresentation() {
+  if (!PRES) return;
+  const p = PRES; PRES = null;
+  cancelAnimationFrame(p.raf); clearInterval(p.photoTimer); clearTimeout(p.idleTimer);
+  clearTimeout(anthemTimer); if (anthemAudio) { anthemAudio.pause(); } anthemCur = null;
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) { const ex = document.exitFullscreen || document.webkitExitFullscreen; try { const r = ex && ex.call(document); if (r && r.catch) r.catch(() => {}); } catch (e) {} }
+  p.el.remove(); document.documentElement.style.overflow = "";
+  const at = p.slides[p.idx]; S.cere.from = Math.max(0, p.idx); save();
+  if (S.tab === 4) render();
+  toast(at && at.type === "group" ? `Präsentation beendet bei „${at.cat}“` : "Präsentation beendet");
+}
+function onFsChange() { if (PRES && !(document.fullscreenElement || document.webkitFullscreenElement) && PRES.wasFs) closePresentation(); else if (PRES && (document.fullscreenElement || document.webkitFullscreenElement)) PRES.wasFs = true; }
+document.addEventListener("fullscreenchange", onFsChange);
+document.addEventListener("webkitfullscreenchange", onFsChange);
+document.addEventListener("keydown", e => {
+  if (!PRES) return;
+  const k = e.key; let used = true;
+  if (k === "ArrowRight" || k === " " || k === "PageDown" || k === "Enter" || k === "ArrowDown") presGo(PRES.idx + 1);
+  else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace" || k === "ArrowUp") presGo(PRES.idx - 1);
+  else if (k === "Home") presGo(0);
+  else if (k === "End") presGo(PRES.slides.length - 1);
+  else if (k === "h" || k === "H") { const s = PRES.slides[PRES.idx]; if (anthemCur) fadeOutAnthem(600); else if (s && s.type === "group") { const c = podiumData(s.cat).anthemCode; if (c && hasAnthem(c)) playAnthem(c); else toast(c ? `Für ${countryName(c)} ist keine Hymne hinterlegt` : "Für diese Gruppe gibt es keine Hymne", 2500); } }
+  else if (k === "m" || k === "M") { presMuted = !presMuted; if (anthemAudio) anthemAudio.muted = presMuted; presAnthemBadge(); }
+  else if (k === "Escape") closePresentation();
+  else if (k === "f" || k === "F") { const rfs = PRES.el.requestFullscreen || PRES.el.webkitRequestFullscreen; if (rfs && !(document.fullscreenElement || document.webkitFullscreenElement)) { try { const p = rfs.call(PRES.el); if (p && p.catch) p.catch(() => {}); } catch (err) {} } }
+  else used = false;
+  if (used) { e.preventDefault(); e.stopPropagation(); }
+}, true);
+function presAnthemBadge() {
+  if (!PRES) return; const b = PRES.el.querySelector(".panthem");
+  b.textContent = presMuted ? "Ton aus (M)" : anthemCur ? `♪ Hymne: ${countryName(anthemCur)}` : "";
+}
+function presGo(i) {
+  if (!PRES) return;
+  if (i < 0 || i >= PRES.slides.length || i === PRES.idx) return;
+  PRES.idx = i; const s = PRES.slides[i];
+  fadeOutAnthem(900);
+  const stage = PRES.el.querySelector(".pstage");
+  const old = stage.querySelectorAll(".pslide");
+  old.forEach(o => { o.classList.add("leave"); setTimeout(() => o.remove(), 700); });
+  const node = document.createElement("div"); node.className = "pslide ps-" + s.type;
+  node.innerHTML = slideHtml(s);
+  stage.appendChild(node);
+  requestAnimationFrame(() => node.classList.add("show"));
+  PRES.el.querySelector(".pcount").textContent = `${i + 1} / ${PRES.slides.length}`;
+  if (s.type === "group" && S.cere.anthem) {
+    const code = podiumData(s.cat).anthemCode;
+    if (code) anthemTimer = setTimeout(() => { if (PRES && PRES.idx === i && hasAnthem(code)) playAnthem(code); }, 3000);
+  }
+}
+function flagCanvas(code, seed, big) {
+  if (!code) return "";
+  return FLAGS && FLAGS[code] ? `<canvas class="wflag ${big ? "big" : ""}" data-code="${code}" data-seed="${seed}"></canvas>` : `<div class="noflag">${esc(code)}</div>`;
+}
+function podiumCol(entries, place, cls) {
+  const shown = entries.slice(0, 3);
+  return `<div class="pcol ${cls}">
+    <div class="pwin">${shown.length ? `<div class="flags">${shown.slice(0, 2).map((x, j) => flagCanvas(str(x.r.nation).toUpperCase(), place * 1.7 + j, shown.length === 1)).join("")}</div>
+      ${shown.map(x => `<div class="pname">${esc(x.r.name)}</div><div class="pnat">${esc(countryName(str(x.r.nation).toUpperCase()))}</div>`).join("")}
+      ${entries.length > 3 ? `<div class="pnat">+ ${entries.length - 3} weitere</div>` : ""}` : ""}</div>
+    <div class="pstep"><span>${place}</span></div></div>`;
+}
+function slideHtml(s) {
+  if (s.type === "intro") return `<div class="pcenter"><div class="pkicker">${esc(RACE && RACE.location_name || "")}</div><h1>Siegerehrung</h1><div class="psub">${esc(S.event.title)}</div><div class="pdate">${esc(S.event.date)}</div></div>`;
+  if (s.type === "end") return `<div class="pcenter"><h1>Herzlichen Glückwunsch!</h1><div class="psub">an alle Kinder, ihr wart großartig.</div></div>`;
+  const d = podiumData(s.cat);
+  const n = d.list.length; const rh = Math.min(6.4, 62 / Math.max(n, 1));
+  const head = `<div class="phead"><span class="plabel">Skilehrer/in</span><h2>${esc(s.cat)}</h2><span class="pn">${n} ${n === 1 ? "Kind" : "Kinder"}</span></div>`;
+  if (d.allFirst) {
+    return head + `<div class="pall"><div class="pallt">Hier gewinnen alle: Platz 1 für jedes Kind!</div><div class="pgrid">${d.list.map((x, j) => `<div class="pcard" style="animation-delay:${0.25 + j * 0.12}s"><span class="medal">1</span><b>${esc(x.r.name)}</b><span>${esc(x.r.nation)}</span></div>`).join("")}</div></div>`;
+  }
+  return head + `<div class="pbody">
+    <div class="podium">${podiumCol(d.p2, 2, "p2")}${podiumCol(d.p1, 1, "p1")}${podiumCol(d.p3, 3, "p3")}</div>
+    <div class="prank" style="--rh:${rh}vh"><table>${d.list.map((x, j) => `<tr class="${x.rank != null && x.rank <= 3 ? "pt3" : ""}" style="animation-delay:${0.15 + j * 0.06}s"><td class="rk">${x.rank != null ? x.rank + "." : "–"}</td><td class="nm">${esc(x.r.name)}</td><td class="nt">${esc(x.r.nation)}</td><td class="tm">${x.r.time != null ? esc(fmtTime(x.r.time)) : ""}</td></tr>`).join("")}</table></div>
+  </div>`;
+}
+function drawFlags(t) {
+  if (!PRES) return;
+  PRES.el.querySelectorAll(".pslide.show:not(.leave) canvas.wflag").forEach(cv => {
+    const img = FLAG_IMG[cv.dataset.code]; if (!img || !img.complete || !img.naturalWidth) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr); if (!W || !H) return;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const ctx = cv.getContext("2d"); ctx.clearRect(0, 0, W, H);
+    const seed = +cv.dataset.seed || 0;
+    const poleW = Math.max(2, W * 0.018), x0 = poleW * 1.6;
+    const fw = W - x0 - W * 0.03; const fh0 = fw * img.naturalHeight / img.naturalWidth; const fh = Math.min(fh0, H * 0.78);
+    const y0 = H * 0.12; const amp = fh * 0.07; const strips = Math.ceil(fw / (2 * dpr)); const sw = fw / strips; const iw = img.naturalWidth / strips;
+    ctx.fillStyle = "#dfe4ec"; ctx.fillRect(x0 - poleW * 1.3, H * 0.04, poleW, H * 0.96);
+    ctx.beginPath(); ctx.arc(x0 - poleW * 0.8, H * 0.04, poleW * 0.9, 0, Math.PI * 2); ctx.fillStyle = "#f2c94c"; ctx.fill();
+    for (let i = 0; i < strips; i++) {
+      const u = i / strips; const ph = u * Math.PI * 2.2 - t * 3.1 + seed; const k = 0.15 + 0.85 * u;
+      const dy = Math.sin(ph) * amp * k; const x = x0 + i * sw;
+      ctx.drawImage(img, i * iw, 0, iw + 0.5, img.naturalHeight, x, y0 + dy, sw + 0.8, fh);
+      const sh = Math.cos(ph) * k;
+      ctx.fillStyle = sh > 0 ? `rgba(255,255,255,${(sh * 0.16).toFixed(3)})` : `rgba(0,0,0,${(-sh * 0.26).toFixed(3)})`;
+      ctx.fillRect(x, y0 + dy, sw + 0.8, fh);
+    }
+  });
+}
+
 /* ============ app shell: login, archive, admin ============ */
 const fmtStamp = t => { if (!t) return ""; const d = new Date(t); if (isNaN(d)) return ""; return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
 const locName = id => (LOCS.find(l => l.id === id) || {}).name || "";
@@ -1648,6 +2074,7 @@ async function openRace(id) {
     const { race } = await api("GET", "/api/races/" + id);
     RACE = { id: race.id, version: race.version, location_id: race.location_id, location_name: race.location_name };
     S = { ...blankState(), ...(race.data || {}) };
+    S.cere = { ...blankState().cere, ...(S.cere || {}) }; S.cere.skip = S.cere.skip || {};
     S.event = { title: race.title || "", date: isoToDe(race.race_date) };
     lastRaceJson = JSON.stringify(S); saveStateV = "saved";
     await loadLocationSettings(race.location_id);
