@@ -719,7 +719,11 @@ const hexRgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(h || ""); const n = m 
 async function loadTemplate() {
   TEMPLATE = { kind: "pdf", bytes: null, w: A4.w, h: A4.h, preview: DEFAULT_PREVIEW, name: "skiCHECK Standardvorlage", isDefault: true };
   const m = SET && SET.templateMeta;
-  if (m) {
+  if (m && m.kind === "none") {
+    let preview = null;
+    if (m.hasGuide) { try { const pr = await api("GET", assetUrl("template-preview"), undefined, { raw: true }); if (pr.ok) preview = URL.createObjectURL(await pr.blob()); } catch (e) {} }
+    TEMPLATE = { kind: "none", bytes: null, w: m.w || A4.w, h: m.h || A4.h, name: "Ohne Grafik (vorgedrucktes Papier)", preview, hasGuide: !!preview };
+  } else if (m) {
     try {
       const r = await api("GET", assetUrl("template"), undefined, { raw: true }); if (!r.ok) throw new Error("missing");
       const bytes = new Uint8Array(await r.arrayBuffer()); let preview = null;
@@ -895,11 +899,12 @@ async function pdfCertificates(recs) {
   doc.setTitle("Urkunden " + (S.event.title || ""));
   const W = TEMPLATE.w, H = TEMPLATE.h;
   let bg, bgKind;
-  if (TEMPLATE.kind === "image") { bg = TEMPLATE.mime === "png" ? await doc.embedPng(TEMPLATE.bytes) : await doc.embedJpg(TEMPLATE.bytes); bgKind = "image"; }
+  if (TEMPLATE.kind === "none") bgKind = "none";
+  else if (TEMPLATE.kind === "image") { bg = TEMPLATE.mime === "png" ? await doc.embedPng(TEMPLATE.bytes) : await doc.embedJpg(TEMPLATE.bytes); bgKind = "image"; }
   else { const [ep] = await doc.embedPdf(templateBytes(), [0]); bg = ep; bgKind = "pdf"; }
   for (const rec of recs) {
     const page = doc.addPage([W, H]);
-    if (bgKind === "pdf") page.drawPage(bg, { x: 0, y: 0, width: W, height: H }); else page.drawImage(bg, { x: 0, y: 0, width: W, height: H });
+    if (bgKind === "pdf") page.drawPage(bg, { x: 0, y: 0, width: W, height: H }); else if (bgKind === "image") page.drawImage(bg, { x: 0, y: 0, width: W, height: H });
     for (const f of SET.fields) {
       if (!f.on) continue; const t0 = fieldText(f, rec); if (!t0) continue;
       const font = F[f.slot] || F.regular; const t = safeText(font, t0);
@@ -1188,9 +1193,18 @@ function viewCerts() {
     </div>
     <div>
       <section class="panel"><header><h3>Vorlage</h3><span class="muted small" style="flex:1">${esc(TEMPLATE.name)}${TEMPLATE.isDefault ? "" : ` (${Math.round(TEMPLATE.w / MM)} × ${Math.round(TEMPLATE.h / MM)} mm)`}</span>
-        <button class="btn sm" data-act="tplLoad">${ICON.up2}Vorlage ersetzen</button>
+        <button class="btn sm" data-act="tplLoad">${ICON.up2}${TEMPLATE.kind === "none" ? "Grafik laden" : "Vorlage ersetzen"}</button>
+        ${TEMPLATE.kind === "none" ? "" : `<button class="btn sm" data-act="tplNone">Ohne Grafik</button>`}
         ${TEMPLATE.isDefault ? "" : `<button class="btn sm ghost" data-act="tplReset">Standard</button>`}</header>
-        <div class="body small muted">PDF (empfohlen, bleibt gestochen scharf), PNG oder JPG. Die Vorlage darf nur die Grafik enthalten, die Texte setzt die App.</div></section>
+        ${TEMPLATE.kind === "none" ? `<div class="body">
+          <p class="small muted" style="margin:0 0 10px">Für vorgedrucktes Urkundenpapier: Die App druckt nur Name, Rang, Zeit usw. auf ein sonst leeres Blatt. Mit einem Scan oder Foto deines Papiers als Hilfsbild setzt du die Felder genau an die richtige Stelle. Das Hilfsbild wird nie gedruckt.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+            <span class="field"><span>Papier</span><select id="tplOrient"><option value="p" ${TEMPLATE.h >= TEMPLATE.w ? "selected" : ""}>A4 hoch</option><option value="l" ${TEMPLATE.w > TEMPLATE.h ? "selected" : ""}>A4 quer</option></select></span>
+            <button class="btn sm" data-act="tplGuide">${ICON.up2}${TEMPLATE.hasGuide ? "Hilfsbild ersetzen" : "Hilfsbild laden (PNG/JPG)"}</button>
+            ${TEMPLATE.hasGuide ? `<button class="btn sm ghost" data-act="tplGuideDel">Hilfsbild entfernen</button>` : ""}
+          </div>
+          <p class="small muted" style="margin:10px 0 0">Tipp: Drucke zuerst eine Probe-Urkunde auf normales Papier, leg sie gegen das Licht auf ein vorgedrucktes Blatt und korrigiere die Positionen, bevor du alle druckst. Beim Drucken im PDF-Programm „Tatsächliche Größe“ bzw. 100 % wählen, nicht „An Seite anpassen“.</p>
+        </div>` : `<div class="body small muted">PDF (empfohlen, bleibt gestochen scharf), PNG oder JPG. Die Vorlage darf nur die Grafik enthalten, die Texte setzt die App.</div>`}</section>
       <section class="panel"><header><h3>Schriften</h3><span class="muted small">Eigene Schrift (TTF/OTF) hochladen, z. B. Expressway aus InDesign.</span></header>
         <div class="body slots">${SLOTS.map(s => `<div class="slot"><span class="muted small">${SLOT_LABEL[s]}</span><span class="fn" style="font-family:'${FONTS[s].family}',sans-serif">${esc(FONTS[s].name)}</span><span class="act"><button class="btn sm" data-act="fontLoad" data-slot="${s}">Ersetzen</button>${FONTS[s].custom ? `<button class="btn sm ghost" data-act="fontReset" data-slot="${s}">Standard</button>` : ""}</span></div>`).join("")}</div></section>
       <section class="panel"><header><h3>Felder</h3><span style="flex:1"></span><button class="btn sm" data-act="fAdd">${ICON.plus}Textfeld</button><button class="btn sm ghost" data-act="fReset">Standardpositionen</button></header>
@@ -1229,7 +1243,11 @@ function drawCert() {
   cv.style.height = cssH + "px"; cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
   const ctx = cv.getContext("2d"); ctx.setTransform(dpr * k, 0, 0, dpr * k, 0, 0);
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, TEMPLATE.w, TEMPLATE.h);
-  if (previewImg) ctx.drawImage(previewImg, 0, 0, TEMPLATE.w, TEMPLATE.h);
+  if (TEMPLATE.kind === "none") {
+    if (previewImg) { ctx.drawImage(previewImg, 0, 0, TEMPLATE.w, TEMPLATE.h); ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(0, 0, TEMPLATE.w, TEMPLATE.h); }
+    ctx.save(); ctx.fillStyle = "rgba(213,31,43,.85)"; ctx.font = "600 10px Barlow, sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(previewImg ? "Hilfsbild, wird nicht gedruckt" : "Vorgedrucktes Papier: gedruckt werden nur die Texte", TEMPLATE.w / 2, 16); ctx.restore();
+  } else if (previewImg) ctx.drawImage(previewImg, 0, 0, TEMPLATE.w, TEMPLATE.h);
   else { ctx.fillStyle = "#8a93ad"; ctx.font = "14px Barlow, sans-serif"; ctx.textAlign = "center"; ctx.fillText("Vorschau der Vorlage nicht verfügbar", TEMPLATE.w / 2, 40); ctx.fillText("(die PDF-Ausgabe verwendet die Vorlage trotzdem)", TEMPLATE.w / 2, 58); }
   boxes = [];
   for (const f of SET.fields) {
@@ -1292,6 +1310,20 @@ document.addEventListener("click", async e => {
   switch (a) {
     case "reloadRace": { const rid = RACE && RACE.id; if (!rid) break; RACE = null; saveStateV = "saved"; await openRace(rid); break; }
     case "retrySave": await flushSave(); break;
+    case "tplNone": {
+      if (!confirm("Urkunden dieses Standorts ohne Grafik drucken (für vorgedrucktes Papier)? Eine hochgeladene Vorlage wird dabei entfernt.")) break;
+      busy("Wird umgestellt …");
+      try { await api("DELETE", assetUrl("template")); await api("DELETE", assetUrl("template-preview")); SET.templateMeta = { kind: "none", w: A4.w, h: A4.h, hasGuide: false }; save(); await flushSave(); await loadTemplate(); render(); toast("Urkunden werden ohne Grafik gedruckt"); }
+      catch (err) { toast(err.message); } finally { busy(null); }
+      break;
+    }
+    case "tplGuide": pickFile(".png,.jpg,.jpeg", async file => {
+      if (!/\.(png|jpe?g)$/i.test(file.name)) { toast("Bitte ein PNG- oder JPG-Bild wählen."); return; }
+      busy("Hilfsbild wird gespeichert …");
+      try { await api("PUT", assetUrl("template-preview"), file, { type: /png$/i.test(file.name) ? "image/png" : "image/jpeg" }); SET.templateMeta = { ...SET.templateMeta, hasGuide: true }; save(); await flushSave(); await loadTemplate(); render(); toast("Hilfsbild übernommen"); }
+      catch (err) { toast(err.message); } finally { busy(null); }
+    }); break;
+    case "tplGuideDel": try { await api("DELETE", assetUrl("template-preview")); SET.templateMeta = { ...SET.templateMeta, hasGuide: false }; save(); await loadTemplate(); render(); } catch (err) { toast(err.message); } break;
     case "loadP": pickFile(".xlsx,.csv", onParticipantsFile); break;
     case "addP": { S.participants.push({ id: uid(), first: "", last: "", teacher: "", nationRaw: "", nation: "", barcode: "", order: S.participants.length, sn: null, removed: false }); save(); render(); toast("Neues Kind unter „Ohne Skilehrer/in“ ergänzt"); break; }
     case "del": if (P) { P.removed = true; P.removedWhy = "entfernt"; save(); render(); } break;
@@ -1369,6 +1401,10 @@ document.addEventListener("change", e => {
   }
   if (t.dataset.allfirst != null) { const c = t.dataset.allfirst; S.resMeta[c] = { ...(S.resMeta[c] || {}), allFirst: t.checked }; save(); render(); return; }
   if (t.id === "certScope") { S.certScope = t.value; save(); return; }
+  if (t.id === "tplOrient" && SET && SET.templateMeta && SET.templateMeta.kind === "none") {
+    const land = t.value === "l"; SET.templateMeta = { ...SET.templateMeta, w: land ? A4.h : A4.w, h: land ? A4.w : A4.h };
+    save(); loadTemplate().then(() => rerenderPanelKeepCanvas()); return;
+  }
   if (t.id === "pvSel") { S.previewIdx = +t.value; save(); drawCert(); return; }
   if (t.dataset.ff) {
     const f = SET.fields.find(x => x.id === S.selField); if (!f) return; const k = t.dataset.ff;
