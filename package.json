@@ -1,0 +1,13 @@
+{
+  "name": "skicheck-skirennen",
+  "version": "2.0.0",
+  "private": true,
+  "description": "skiCHECK Skirennen: Startlisten, Ergebnisse und Urkunden mit Login und Archiv",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "DEV_MEMORY=1 ADMIN_USER=admin ADMIN_PASSWORD=admin12345 node server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "pg": "^8.12.0" }
+}
