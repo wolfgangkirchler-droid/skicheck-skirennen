@@ -17,6 +17,7 @@ module.exports = {
     await q(`CREATE TABLE IF NOT EXISTS skirennen.locations (
       id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, settings JSONB NOT NULL DEFAULT '{}'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now())`);
+    await q(`ALTER TABLE skirennen.locations ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ`);
     await q(`CREATE TABLE IF NOT EXISTS skirennen.users (
       id SERIAL PRIMARY KEY, username TEXT NOT NULL UNIQUE, name TEXT NOT NULL DEFAULT '', password_hash TEXT NOT NULL,
       role TEXT NOT NULL DEFAULT 'user', location_id INTEGER REFERENCES skirennen.locations(id), active BOOLEAN NOT NULL DEFAULT true,
@@ -67,8 +68,9 @@ module.exports = {
   async purgeSessions() { await q(`DELETE FROM skirennen.sessions WHERE expires_at <= now()`); },
 
   // locations
-  async listLocations() { return (await q(`SELECT id, name FROM skirennen.locations ORDER BY lower(name)`)).rows; },
-  async getLocation(id) { return (await q(`SELECT id, name FROM skirennen.locations WHERE id=$1`, [id])).rows[0] || null; },
+  async listLocations() { return (await q(`SELECT l.id, l.name, (l.archived_at IS NOT NULL) AS archived, l.archived_at, (SELECT count(*)::int FROM skirennen.races r WHERE r.location_id=l.id) AS race_count FROM skirennen.locations l ORDER BY lower(l.name)`)).rows; },
+  async getLocation(id) { return (await q(`SELECT id, name, (archived_at IS NOT NULL) AS archived FROM skirennen.locations WHERE id=$1`, [id])).rows[0] || null; },
+  async setLocationArchived(id, on) { return (await q(`UPDATE skirennen.locations SET archived_at=${on ? "now()" : "NULL"} WHERE id=$1 RETURNING id`, [id])).rows[0] || null; },
   async createLocation(name) { return (await q(`INSERT INTO skirennen.locations (name) VALUES ($1) RETURNING id, name`, [name])).rows[0]; },
   async renameLocation(id, name) { return (await q(`UPDATE skirennen.locations SET name=$1 WHERE id=$2 RETURNING id, name`, [name, id])).rows[0] || null; },
   async getSettings(id) { const r = (await q(`SELECT settings FROM skirennen.locations WHERE id=$1`, [id])).rows[0]; return r ? r.settings : null; },
@@ -90,8 +92,13 @@ module.exports = {
   async deleteAnthem(code) { await q(`DELETE FROM skirennen.anthems WHERE code=$1`, [code]); },
 
   // races
+  async deleteUser(id) {
+    await q(`UPDATE skirennen.races SET created_by=NULL WHERE created_by=$1`, [id]);
+    await q(`UPDATE skirennen.races SET updated_by=NULL WHERE updated_by=$1`, [id]);
+    await q(`DELETE FROM skirennen.users WHERE id=$1`, [id]);
+  },
   async listRaces(locationId) {
-    const where = locationId ? `WHERE r.location_id=$1` : ``;
+    const where = locationId ? `WHERE r.location_id=$1 AND l.archived_at IS NULL` : `WHERE l.archived_at IS NULL`;
     return (await q(`SELECT ${RACE_LIST_COLS} FROM skirennen.races r JOIN skirennen.locations l ON l.id=r.location_id
       LEFT JOIN skirennen.users u ON u.id=r.updated_by ${where} ORDER BY r.race_date DESC NULLS LAST, r.created_at DESC`, locationId ? [locationId] : [])).rows;
   },

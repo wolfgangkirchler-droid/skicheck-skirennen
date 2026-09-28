@@ -98,7 +98,9 @@ async function currentUser(req) {
   const t = cookies(req).sid; if (!t) return null;
   const s = await store.getSession(tokenHash(t)); if (!s) return null;
   const u = await store.getUser(s.user_id);
-  return u && u.active ? u : null;
+  if (!u || !u.active) return null;
+  if (!isAdmin(u) && u.location_id) { const l = await store.getLocation(u.location_id); if (!l || l.archived) return null; }
+  return u;
 }
 
 /* ---------- routes ---------- */
@@ -116,6 +118,7 @@ route("POST", "/api/login", async (req, res) => {
   const ok = verifyPassword(pw, u ? u.password_hash : DUMMY_HASH) && u && u.active;
   if (!ok) { noteFail(key); throw new HttpError(401, "Benutzername oder Passwort stimmt nicht."); }
   fails.delete(key);
+  if (u.role !== "admin" && u.location_id) { const l = await store.getLocation(u.location_id); if (!l || l.archived) throw new HttpError(403, "Dein Standort ist archiviert. Bitte wende dich an den Administrator."); }
   const token = crypto.randomBytes(32).toString("base64url");
   const expires = new Date(Date.now() + SESSION_DAYS * 86400_000);
   await store.createSession(tokenHash(token), u.id, expires.toISOString());
@@ -133,7 +136,7 @@ route("POST", "/api/logout", async (req, res) => {
 
 route("GET", "/api/me", async (req, res, u) => {
   const locs = await store.listLocations();
-  return { user: u, locations: isAdmin(u) ? locs : locs.filter(l => l.id === u.location_id) };
+  return { user: u, locations: isAdmin(u) ? locs : locs.filter(l => l.id === u.location_id).map(l => ({ id: l.id, name: l.name })) };
 });
 
 route("POST", "/api/me/password", async (req, res, u) => {
@@ -154,7 +157,8 @@ route("GET", "/api/races", async (req, res, u, p, url) => {
 route("POST", "/api/races", async (req, res, u) => {
   const b = await readJson(req, 50_000);
   const locId = isAdmin(u) ? parseInt(b.location_id, 10) : u.location_id;
-  if (!locId || !(await store.getLocation(locId))) throw bad("Bitte einen Standort wählen.");
+  const loc = locId ? await store.getLocation(locId) : null;
+  if (!loc || loc.archived) throw bad("Bitte einen Standort wählen.");
   const title = cleanStr(b.title) || "Skirennen";
   const race = await store.createRace({ location_id: locId, title, race_date: isoDateOrNull(b.date), data: {}, user_id: u.id });
   return { race };
@@ -162,6 +166,7 @@ route("POST", "/api/races", async (req, res, u) => {
 async function loadRaceFor(u, id) {
   const r = await store.getRace(parseInt(id, 10));
   if (!r || !canSeeLocation(u, r.location_id)) throw new HttpError(404, "Rennen nicht gefunden");
+  const l = await store.getLocation(r.location_id); if (!l || l.archived) throw new HttpError(404, "Rennen nicht gefunden");
   return r;
 }
 route("GET", "/api/races/:id", async (req, res, u, p) => ({ race: await loadRaceFor(u, p.id) }));
@@ -195,6 +200,13 @@ route("PUT", "/api/locations/:id", async (req, res, u, p) => {
   const name = cleanStr((await readJson(req, 10_000)).name, 80); if (!name) throw bad("Bitte einen Namen eingeben.");
   try { const l = await store.renameLocation(parseInt(p.id, 10), name); if (!l) throw new HttpError(404, "Standort nicht gefunden"); return { location: l }; }
   catch (e) { if (e.code === "23505") throw bad("Diesen Standort gibt es schon."); throw e; }
+});
+route("PUT", "/api/locations/:id/archive", async (req, res, u, p) => {
+  if (!isAdmin(u)) throw new HttpError(403, "Keine Berechtigung");
+  const id = parseInt(p.id, 10); const l = await store.getLocation(id); if (!l) throw new HttpError(404, "Standort nicht gefunden");
+  const b = await readJson(req, 10_000); const on = !!b.archived;
+  if (on && cleanStr(b.confirm, 80) !== l.name) throw bad("Zur Sicherheit bitte den Namen des Standorts genau eintippen.");
+  await store.setLocationArchived(id, on); return { ok: true, archived: on };
 });
 function locFor(u, id) { const n = parseInt(id, 10); if (!n || !canSeeLocation(u, n)) throw new HttpError(404, "Standort nicht gefunden"); return n; }
 route("GET", "/api/locations/:id/settings", async (req, res, u, p) => ({ settings: (await store.getSettings(locFor(u, p.id))) || {} }));
@@ -274,6 +286,14 @@ route("POST", "/api/users", async (req, res, u) => {
   const pw = String(b.password || ""); if (pw.length < 8) throw bad("Das Passwort braucht mindestens 8 Zeichen.");
   try { return { user: await store.createUser({ username, name: cleanStr(b.name, 80) || username, password_hash: hashPassword(pw), role, location_id }) }; }
   catch (e) { if (e.code === "23505") throw bad("Diesen Benutzernamen gibt es schon."); throw e; }
+});
+route("DELETE", "/api/users/:id", async (req, res, u, p) => {
+  adminOnly(u); const id = parseInt(p.id, 10); const target = await store.getUser(id); if (!target) throw new HttpError(404, "Benutzer nicht gefunden");
+  if (target.id === u.id) throw bad("Du kannst dich nicht selbst löschen.");
+  const b = await readJson(req, 10_000);
+  if (cleanStr(b.confirm, 60).toLowerCase() !== target.username) throw bad("Zur Sicherheit bitte den Benutzernamen genau eintippen.");
+  if (target.role === "admin" && target.active && (await store.countActiveAdmins()) <= 1) throw bad("Es muss mindestens ein aktiver Administrator bleiben.");
+  await store.deleteUserSessions(id); await store.deleteUser(id); return { ok: true };
 });
 route("PUT", "/api/users/:id", async (req, res, u, p) => {
   adminOnly(u); const id = parseInt(p.id, 10); const target = await store.getUser(id); if (!target) throw new HttpError(404, "Benutzer nicht gefunden");

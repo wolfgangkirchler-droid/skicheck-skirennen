@@ -27,8 +27,10 @@ module.exports = {
   async deleteSession(hash) { db.sessions.delete(hash); },
   async deleteUserSessions(userId) { for (const [k, s] of db.sessions) if (s.user_id === userId) db.sessions.delete(k); },
   async purgeSessions() {},
-  async listLocations() { return db.locations.map(l => ({ id: l.id, name: l.name })).sort((a, b) => a.name.localeCompare(b.name)); },
-  async getLocation(id) { const l = db.locations.find(x => x.id === id); return l ? { id: l.id, name: l.name } : null; },
+  async listLocations() { return db.locations.map(l => ({ id: l.id, name: l.name, archived: !!l.archived_at, archived_at: l.archived_at || null, race_count: db.races.filter(r => r.location_id === l.id).length })).sort((a, b) => a.name.localeCompare(b.name)); },
+  async getLocation(id) { const l = db.locations.find(x => x.id === id); return l ? { id: l.id, name: l.name, archived: !!l.archived_at } : null; },
+  async setLocationArchived(id, on) { const l = db.locations.find(x => x.id === id); if (!l) return null; l.archived_at = on ? now() : null; return { id }; },
+  async deleteUser(id) { db.races.forEach(r => { if (r.created_by === id) r.created_by = null; if (r.updated_by === id) r.updated_by = null; }); db.users = db.users.filter(u => u.id !== id); for (const [k, s] of db.sessions) if (s.user_id === id) db.sessions.delete(k); },
   async createLocation(name) {
     if (db.locations.some(x => x.name === name)) { const e = new Error("duplicate"); e.code = "23505"; throw e; }
     const l = { id: ++db.seq.l, name, settings: {} }; db.locations.push(l); return { id: l.id, name };
@@ -44,7 +46,8 @@ module.exports = {
   async setAnthem(code, name, bytes, mime) { db.anthems.set(code, { name, bytes, mime, updated_at: now() }); },
   async deleteAnthem(code) { db.anthems.delete(code); },
   async listRaces(locationId) {
-    return db.races.filter(r => !locationId || r.location_id === locationId)
+    const arch = new Set(db.locations.filter(l => l.archived_at).map(l => l.id));
+    return db.races.filter(r => (!locationId || r.location_id === locationId) && !arch.has(r.location_id))
       .sort((a, b) => (b.race_date || "").localeCompare(a.race_date || "") || b.created_at.localeCompare(a.created_at)).map(listRow);
   },
   async getRace(id) { const r = db.races.find(x => x.id === id); return r ? { ...listRow(r), data: clone(r.data) } : null; },
