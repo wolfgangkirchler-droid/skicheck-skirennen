@@ -412,7 +412,7 @@ const APP_LOGO_NEG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABBoAAADICAYA
 document.getElementById("topLogo").src = APP_LOGO_NEG;
 async function updateTopLogo() {
   const img = document.getElementById("topLogo"); let src = APP_LOGO_NEG, plate = false, alt = "skischoolrace";
-  if (ME && ME.role !== "admin" && ME.location_id) {
+  if (ME && ME.location_id) {
     try {
       const { settings } = await api("GET", `/api/locations/${ME.location_id}/settings`);
       const b = { ...SKICHECK_BRAND, ...(settings.brand || {}) }; alt = b.subtitle || "";
@@ -2522,7 +2522,7 @@ function viewAdmin() {
         <td><input class="cell" data-uf="name" value="${esc(u.name)}" aria-label="Name" style="min-width:150px"></td>
         <td class="small" style="font-family:ui-monospace,Menlo,Consolas,monospace">${esc(u.username)}</td>
         <td><select class="cell" data-uf="role" style="min-width:140px"><option value="user" ${u.role === "user" ? "selected" : ""}>User</option><option value="admin" ${u.role === "admin" ? "selected" : ""}>Administrator</option></select></td>
-        <td><select class="cell" data-uf="location_id">${locOpts(u.location_id)}</select></td>
+        <td><select class="cell" data-uf="location_id" title="Bestimmt auch das Firmenlogo links oben">${locOpts(u.location_id)}</select></td>
         <td style="text-align:center"><input type="checkbox" data-uf="active" ${u.active ? "checked" : ""} aria-label="Aktiv"></td>
         <td class="muted small">${esc(fmtStamp(u.last_login)) || "noch nie"}</td>
         <td style="white-space:nowrap"><button class="btn sm" data-nav="resetPw" data-id="${u.id}">Passwort setzen</button> ${u.id !== ME.id ? `<button class="iconbtn" data-nav="userDel" data-id="${u.id}" title="Benutzer löschen" aria-label="Benutzer löschen">${ICON.x}</button>` : ""}${u.location_id && (LOCS.find(l => l.id === u.location_id) || {}).archived ? ` <span class="pill warn">Standort archiviert</span>` : ""}</td>
@@ -2720,7 +2720,7 @@ document.addEventListener("change", async e => {
   if (t.dataset.uf) {
     const id = +t.closest("tr").dataset.uid; const f = t.dataset.uf;
     const val = f === "active" ? t.checked : f === "location_id" ? (t.value ? +t.value : null) : t.value;
-    try { const { user } = await api("PUT", "/api/users/" + id, { [f]: val }); USERS = USERS.map(u => u.id === id ? user : u); if (ME.id === id) ME = { ...ME, ...user }; toast("Gespeichert"); render(); }
+    try { const { user } = await api("PUT", "/api/users/" + id, { [f]: val }); USERS = USERS.map(u => u.id === id ? user : u); if (ME.id === id) { ME = { ...ME, ...user }; updateTopLogo(); } toast("Gespeichert"); render(); }
     catch (err) { toast(err.message, 5000); render(); }
   }
 });
