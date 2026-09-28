@@ -80,7 +80,19 @@ function canSeeLocation(u, locId) { return isAdmin(u) || (u && u.location_id ===
 const cleanStr = (v, max = 200) => String(v ?? "").trim().slice(0, max);
 function isoDateOrNull(v) { v = cleanStr(v, 20); return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null; }
 const USERNAME_RE = /^[a-z0-9._@-]{3,60}$/;
-const ASSET_KEYS = new Set(["template", "template-preview", "font-bold", "font-regular", "font-light", "font-italic"]);
+const ASSET_KEYS = new Set(["template", "template-preview", "font-bold", "font-regular", "font-light", "font-italic", "brand-logo", "brand-logo-dark"]);
+const ADMIN_ASSETS = new Set(["brand-logo", "brand-logo-dark"]);
+const HEX = /^#[0-9a-fA-F]{6}$/;
+function cleanBrand(b) {
+  b = b && typeof b === "object" ? b : {};
+  return {
+    logo: ["skicheck", "app", "custom"].includes(b.logo) ? b.logo : "app",
+    subtitle: cleanStr(b.subtitle, 80),
+    primary: HEX.test(b.primary || "") ? b.primary : "#1B2452",
+    accent: HEX.test(b.accent || "") ? b.accent : "#D51F2B",
+    hasLogo: !!b.hasLogo, hasDark: !!b.hasDark, logoMime: cleanStr(b.logoMime, 40), darkMime: cleanStr(b.darkMime, 40)
+  };
+}
 
 async function currentUser(req) {
   const t = cookies(req).sid; if (!t) return null;
@@ -173,7 +185,10 @@ route("DELETE", "/api/races/:id", async (req, res, u, p) => {
 route("POST", "/api/locations", async (req, res, u) => {
   if (!isAdmin(u)) throw new HttpError(403, "Keine Berechtigung");
   const name = cleanStr((await readJson(req, 10_000)).name, 80); if (!name) throw bad("Bitte einen Namen eingeben.");
-  try { return { location: await store.createLocation(name) }; } catch (e) { if (e.code === "23505") throw bad("Diesen Standort gibt es schon."); throw e; }
+  let loc;
+  try { loc = await store.createLocation(name); } catch (e) { if (e.code === "23505") throw bad("Diesen Standort gibt es schon."); throw e; }
+  await store.setSettings(loc.id, { fields: [], nationMap: {}, templateMeta: { kind: "none", w: 595.276, h: 841.89, hasGuide: false }, fontNames: {}, brand: cleanBrand({ logo: "app", subtitle: name }) });
+  return { location: loc };
 });
 route("PUT", "/api/locations/:id", async (req, res, u, p) => {
   if (!isAdmin(u)) throw new HttpError(403, "Keine Berechtigung");
@@ -185,8 +200,18 @@ function locFor(u, id) { const n = parseInt(id, 10); if (!n || !canSeeLocation(u
 route("GET", "/api/locations/:id/settings", async (req, res, u, p) => ({ settings: (await store.getSettings(locFor(u, p.id))) || {} }));
 route("PUT", "/api/locations/:id/settings", async (req, res, u, p) => {
   const id = locFor(u, p.id); const b = await readJson(req, 2 * 1024 * 1024);
+  const old = (await store.getSettings(id)) || {};
   const s = { fields: Array.isArray(b.fields) ? b.fields : [], nationMap: b.nationMap && typeof b.nationMap === "object" ? b.nationMap : {}, templateMeta: b.templateMeta || null, fontNames: b.fontNames && typeof b.fontNames === "object" ? b.fontNames : {} };
+  s.certFormat = ["A3", "A4", "A5", "A6"].includes(b.certFormat) ? b.certFormat : null;
+  if (old.brand) s.brand = old.brand;
   await store.setSettings(id, s); return { ok: true };
+});
+route("PUT", "/api/locations/:id/brand", async (req, res, u, p) => {
+  if (!isAdmin(u)) throw new HttpError(403, "Nur Administratoren können das Erscheinungsbild ändern.");
+  const id = locFor(u, p.id); const b = await readJson(req, 50_000);
+  const old = (await store.getSettings(id)) || {};
+  const brand = cleanBrand(b);
+  await store.setSettings(id, { ...old, brand }); return { brand };
 });
 route("GET", "/api/locations/:id/assets/:key", async (req, res, u, p) => {
   const id = locFor(u, p.id); if (!ASSET_KEYS.has(p.key)) throw new HttpError(404, "Unbekannt");
@@ -195,12 +220,14 @@ route("GET", "/api/locations/:id/assets/:key", async (req, res, u, p) => {
 });
 route("PUT", "/api/locations/:id/assets/:key", async (req, res, u, p) => {
   const id = locFor(u, p.id); if (!ASSET_KEYS.has(p.key)) throw new HttpError(404, "Unbekannt");
+  if (ADMIN_ASSETS.has(p.key) && !isAdmin(u)) throw new HttpError(403, "Nur Administratoren können das Logo ändern.");
   const bytes = await readBody(req, 25 * 1024 * 1024); if (!bytes.length) throw bad("Leere Datei");
   const mime = cleanStr(req.headers["x-asset-type"] || "application/octet-stream", 80);
   await store.setAsset(id, p.key, bytes, mime); return { ok: true };
 });
 route("DELETE", "/api/locations/:id/assets/:key", async (req, res, u, p) => {
   const id = locFor(u, p.id); if (!ASSET_KEYS.has(p.key)) throw new HttpError(404, "Unbekannt");
+  if (ADMIN_ASSETS.has(p.key) && !isAdmin(u)) throw new HttpError(403, "Nur Administratoren können das Logo ändern.");
   await store.deleteAsset(id, p.key); return { ok: true };
 });
 
